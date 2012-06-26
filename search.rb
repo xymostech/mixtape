@@ -42,7 +42,7 @@ db.execute_batch <<-SQL
   CREATE UNIQUE INDEX index_song_id ON songs ( song_id );
 SQL
 
-File.readlines("/usr/share/dict/words").each do |word|
+File.readlines("words").each do |word|
     puts word.chomp.downcase
 
     begin
