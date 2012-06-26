@@ -5,8 +5,9 @@ require 'json'
 require 'open-uri'
 require 'sqlite3'
 
-start_word = ARGV[0]
-end_word = ARGV[1]
+machine = ARGV[0].to_i
+num_machines = ARGV[1].to_i
+start_word = ARGV[2] || ""
 
 db = SQLite3::Database.new("songs.db")
 
@@ -42,8 +43,11 @@ db.execute_batch <<-SQL
   CREATE UNIQUE INDEX index_song_id ON songs ( song_id );
 SQL
 
-File.readlines("words").each do |word|
-    puts word.chomp.downcase
+File.readlines("words").each_with_index do |word, i|
+    next if i % num_machines != machine
+    next if word.chomp.downcase < start_word.chomp.downcase
+
+    puts word.chomp
 
     begin
         data = JSON.parse(open("http://itunes.apple.com/search?term=#{word.chomp}&media=music&entity=musicTrack&limit=200").read)
